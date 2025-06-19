@@ -13,10 +13,10 @@ export interface BentoListProps
 
 export const BentoList = forwardRef<HTMLDivElement, BentoListProps>(
   ({ className, listItems = [], listName, index, ...args }, ref) => {
-    const { expandedCards, toggleCardExpansion } = useContext(KanbanBoardContext);
+    const { expandedCards, horizontallyExpandedCards, toggleCardExpansion, toggleHorizontalCardExpansion } = useContext(KanbanBoardContext);
 
     // Check if any cards are expanded to determine grid layout
-    const hasExpandedCards = expandedCards.size > 0;
+    const hasExpandedCards = expandedCards.size > 0 || horizontallyExpandedCards.size > 0;
 
     return (
       <div>
@@ -31,7 +31,9 @@ export const BentoList = forwardRef<HTMLDivElement, BentoListProps>(
               ref={provided.innerRef}
               {...provided.droppableProps}
               className={cn(
-                'kanban-list border-b-4 border-transparent bg-red-800 w-fit max-w-[250px] min-h-[200px]',
+                'kanban-list border-b-4 border-transparent bg-red-800 w-fit min-h-[200px]',
+                // Adjust max width to accommodate horizontally expanded cards
+                horizontallyExpandedCards.size > 0 ? 'max-w-[500px]' : 'max-w-[250px]',
                 className,
               )}
               {...args}>
@@ -41,6 +43,7 @@ export const BentoList = forwardRef<HTMLDivElement, BentoListProps>(
               )}>
                 {listItems.map((card: KanbanCardType, index: number) => {
                   const isExpanded = card.isExpanded || expandedCards.has(card.ticketID);
+                  const isHorizontallyExpanded = card.isHorizontallyExpanded || horizontallyExpandedCards.has(card.ticketID);
                   return (
                     <Draggable
                       key={`${card.taskTitle.replaceAll(' ', '-')}-${card.ticketID}`}
@@ -59,7 +62,9 @@ export const BentoList = forwardRef<HTMLDivElement, BentoListProps>(
                             {...card} 
                             index={index} 
                             isExpanded={isExpanded}
+                            isHorizontallyExpanded={isHorizontallyExpanded}
                             onToggleExpansion={toggleCardExpansion}
+                            onToggleHorizontalExpansion={toggleHorizontalCardExpansion}
                           />
                         </div>
                       )}

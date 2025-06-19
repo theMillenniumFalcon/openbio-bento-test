@@ -12,6 +12,7 @@ declare type KanbanCardType = {
   assignees: AssigneeType[];
   tags?: string[];
   isExpanded?: boolean;
+  isHorizontallyExpanded?: boolean;
 };
 
 declare type KanbanListType = {

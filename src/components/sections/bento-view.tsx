@@ -54,7 +54,8 @@ export default function BentoView(): React.ReactElement {
     // Preserve the expanded state when moving the card
     const cardWithExpandedState = {
       ...draggedTask,
-      isExpanded: draggedTask.isExpanded || false
+      isExpanded: draggedTask.isExpanded || false,
+      isHorizontallyExpanded: draggedTask.isHorizontallyExpanded || false
     };
     
     destinationList!.listItems.splice(destination.index, 0, cardWithExpandedState);
@@ -75,7 +76,7 @@ export default function BentoView(): React.ReactElement {
           onDragStart={onDragStart}
           onDragUpdate={onDragUpdate}
           onDragEnd={onDragEnd}>
-          <ResponsiveControl className="flex flex-row items-start justify-center gap-12 max-xl:overflow-x-scroll bg-blue-500 p-4">
+          <ResponsiveControl className="flex flex-row items-start justify-center gap-6 max-xl:overflow-x-scroll bg-blue-500 p-4">
             {filteredKanbanData.map((list: KanbanListType, index: number) => {
               return <BentoList key={index} index={index} {...list} />;
             })}

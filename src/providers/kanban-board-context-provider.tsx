@@ -14,6 +14,7 @@ export default function KanbanBoardContextProvider({
     KanbanListType[]
   >([]);
   const [expandedCards, setExpandedCards] = useState<Set<number>>(new Set());
+  const [horizontallyExpandedCards, setHorizontallyExpandedCards] = useState<Set<number>>(new Set());
 
   // Load expanded cards from localStorage on mount
   useEffect(() => {
@@ -27,6 +28,16 @@ export default function KanbanBoardContextProvider({
           console.error('Error parsing expanded cards from localStorage:', error);
         }
       }
+
+      const storedHorizontallyExpandedCards = localStorage.getItem('horizontallyExpandedCards');
+      if (storedHorizontallyExpandedCards) {
+        try {
+          const parsedCards = JSON.parse(storedHorizontallyExpandedCards);
+          setHorizontallyExpandedCards(new Set(parsedCards));
+        } catch (error) {
+          console.error('Error parsing horizontally expanded cards from localStorage:', error);
+        }
+      }
     }
   }, []);
 
@@ -36,6 +47,13 @@ export default function KanbanBoardContextProvider({
       localStorage.setItem('expandedCards', JSON.stringify(Array.from(expandedCards)));
     }
   }, [expandedCards]);
+
+  // Save horizontally expanded cards to localStorage whenever they change
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.setItem('horizontallyExpandedCards', JSON.stringify(Array.from(horizontallyExpandedCards)));
+    }
+  }, [horizontallyExpandedCards]);
 
   const toggleCardExpansion = (ticketID: number, isExpanded: boolean) => {
     setExpandedCards(prev => {
@@ -79,6 +97,48 @@ export default function KanbanBoardContextProvider({
     });
   };
 
+  const toggleHorizontalCardExpansion = (ticketID: number, isExpanded: boolean) => {
+    setHorizontallyExpandedCards(prev => {
+      const newSet = new Set(prev);
+      if (isExpanded) {
+        newSet.add(ticketID);
+      } else {
+        newSet.delete(ticketID);
+      }
+      return newSet;
+    });
+
+    // Update the card objects in both kanbanData and filteredKanbanData
+    setKanbanData(prevData => {
+      const updatedData = prevData.map(list => ({
+        ...list,
+        listItems: list.listItems.map(card => 
+          card.ticketID === ticketID 
+            ? { ...card, isHorizontallyExpanded: isExpanded } 
+            : card
+        )
+      }));
+      
+      // Update localStorage with the new data
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem('kanban', JSON.stringify(updatedData));
+      }
+      
+      return updatedData;
+    });
+
+    setFilteredKanbanData(prevData => {
+      return prevData.map(list => ({
+        ...list,
+        listItems: list.listItems.map(card => 
+          card.ticketID === ticketID 
+            ? { ...card, isHorizontallyExpanded: isExpanded } 
+            : card
+        )
+      }));
+    });
+  };
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -89,10 +149,14 @@ export default function KanbanBoardContextProvider({
 
           // Restore expanded state from card objects
           const expandedFromCards = new Set<number>();
+          const horizontallyExpandedFromCards = new Set<number>();
           response.forEach(list => {
             list.listItems.forEach(card => {
               if (card.isExpanded) {
                 expandedFromCards.add(card.ticketID);
+              }
+              if (card.isHorizontallyExpanded) {
+                horizontallyExpandedFromCards.add(card.ticketID);
               }
             });
           });
@@ -107,8 +171,20 @@ export default function KanbanBoardContextProvider({
               console.error('Error parsing expanded cards from localStorage:', error);
             }
           }
+
+          // Merge with any existing horizontally expanded cards from localStorage
+          const storedHorizontallyExpandedCards = localStorage.getItem('horizontallyExpandedCards');
+          if (storedHorizontallyExpandedCards) {
+            try {
+              const parsedCards = JSON.parse(storedHorizontallyExpandedCards);
+              parsedCards.forEach((ticketID: number) => horizontallyExpandedFromCards.add(ticketID));
+            } catch (error) {
+              console.error('Error parsing horizontally expanded cards from localStorage:', error);
+            }
+          }
           
           setExpandedCards(expandedFromCards);
+          setHorizontallyExpandedCards(horizontallyExpandedFromCards);
 
           // Filter individual tasks based on searchQuery
           const filteredData = response.map((list) => ({
@@ -158,6 +234,9 @@ export default function KanbanBoardContextProvider({
         expandedCards,
         setExpandedCards,
         toggleCardExpansion,
+        horizontallyExpandedCards,
+        setHorizontallyExpandedCards,
+        toggleHorizontalCardExpansion,
       }}>
       {children}
     </KanbanBoardContext.Provider>

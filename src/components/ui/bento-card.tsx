@@ -4,13 +4,14 @@ import { Badge } from './badge';
 import { BadgeThemeForTeam } from '@/common/constants';
 import { motion } from 'framer-motion';
 import { Tooltip } from './tooltip';
-import { RectangleVertical, Trash2, Square } from 'lucide-react';
+import { RectangleVertical, Trash2, Square, RectangleHorizontal } from 'lucide-react';
 
 export interface BentoCardProps
   extends React.HTMLAttributes<HTMLDivElement>,
     KanbanCardType {
   index: number;
   onToggleExpansion?: (ticketID: number, isExpanded: boolean) => void;
+  onToggleHorizontalExpansion?: (ticketID: number, isExpanded: boolean) => void;
 }
 
 export const BentoCard = forwardRef<HTMLDivElement, BentoCardProps>(
@@ -24,14 +25,33 @@ export const BentoCard = forwardRef<HTMLDivElement, BentoCardProps>(
       assignees,
       index,
       isExpanded = false,
+      isHorizontallyExpanded = false,
       onToggleExpansion,
+      onToggleHorizontalExpansion,
       ...args
     },
     ref,
   ) => {
+    const handleHorizontalRectangleClick = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      // If already horizontally expanded, collapse it
+      if (isHorizontallyExpanded) {
+        onToggleHorizontalExpansion?.(ticketID, false);
+      } else {
+        // If not horizontally expanded, expand horizontally and collapse vertical
+        onToggleExpansion?.(ticketID, false);
+        onToggleHorizontalExpansion?.(ticketID, true);
+      }
+    };
+
     const handleRectangleClick = (e: React.MouseEvent) => {
       e.stopPropagation();
-      if (!isExpanded) {
+      // If already vertically expanded, collapse it
+      if (isExpanded) {
+        onToggleExpansion?.(ticketID, false);
+      } else {
+        // If not vertically expanded, expand vertically and collapse horizontal
+        onToggleHorizontalExpansion?.(ticketID, false);
         onToggleExpansion?.(ticketID, true);
       }
     };
@@ -39,6 +59,20 @@ export const BentoCard = forwardRef<HTMLDivElement, BentoCardProps>(
     const handleSquareClick = (e: React.MouseEvent) => {
       e.stopPropagation();
       onToggleExpansion?.(ticketID, false);
+      onToggleHorizontalExpansion?.(ticketID, false);
+    };
+
+    // Determine card dimensions based on expansion state
+    const getCardDimensions = () => {
+      if (isExpanded && isHorizontallyExpanded) {
+        return 'h-[408px] w-[408px]';
+      } else if (isExpanded) {
+        return 'h-[408px] w-[180px]';
+      } else if (isHorizontallyExpanded) {
+        return 'h-[180px] w-[408px]';
+      } else {
+        return 'h-[180px] w-[180px]';
+      }
     };
 
     return (
@@ -56,18 +90,21 @@ export const BentoCard = forwardRef<HTMLDivElement, BentoCardProps>(
         }}
         whileTap={{
           rotate: -4,
-        }}>
+        }}
+        className={cn(
+          isHorizontallyExpanded && 'relative z-10'
+        )}>
         <Tooltip
           content={
             <div className="flex items-center gap-3">
               <div className={cn(
                 "p-1 rounded cursor-pointer",
-                isExpanded ? "bg-black" : "bg-white"
+                (isExpanded || isHorizontallyExpanded) ? "bg-black" : "bg-white"
               )}>
                 <Square 
                   size={16} 
                   className={cn(
-                    isExpanded ? "text-white" : "text-black"
+                    (isExpanded || isHorizontallyExpanded) ? "text-white" : "text-black"
                   )}
                   onClick={handleSquareClick}
                 />
@@ -85,6 +122,19 @@ export const BentoCard = forwardRef<HTMLDivElement, BentoCardProps>(
                   onClick={handleRectangleClick}
                 />
               </div>
+              <div className={cn(
+                "p-1 rounded",
+                isHorizontallyExpanded ? "bg-white" : "bg-black"
+              )}>
+                <RectangleHorizontal 
+                  size={16} 
+                  className={cn(
+                    "cursor-pointer hover:text-gray-300",
+                    isHorizontallyExpanded ? "text-black" : "text-white"
+                  )}
+                  onClick={handleHorizontalRectangleClick}
+                />
+              </div>
               <Trash2 size={16} className="cursor-pointer hover:text-gray-300" />
             </div>
           }
@@ -93,7 +143,8 @@ export const BentoCard = forwardRef<HTMLDivElement, BentoCardProps>(
             ref={ref}
             className={cn(
               'kanban-card bg-white rounded-xl shadow-sm p-3 cursor-pointer hover:shadow-lg transition-all active:scale-90 select-none flex flex-col',
-              isExpanded ? 'h-[408px] w-[180px]' : 'h-[180px] w-[180px]',
+              getCardDimensions(),
+              // isHorizontallyExpanded && 'absolute left-0',
               className,
             )}
             id={`${taskTitle.replaceAll(' ', '-')}-${ticketID}`}
