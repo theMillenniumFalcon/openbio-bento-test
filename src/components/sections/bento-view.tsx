@@ -76,7 +76,7 @@ export default function BentoView(): React.ReactElement {
           onDragStart={onDragStart}
           onDragUpdate={onDragUpdate}
           onDragEnd={onDragEnd}>
-          <ResponsiveControl className="flex flex-row items-start justify-center gap-6 max-xl:overflow-x-scroll bg-blue-500 p-4">
+          <ResponsiveControl className="flex flex-row items-start justify-center gap-12 max-xl:overflow-x-scroll bg-blue-500 p-4">
             {filteredKanbanData.map((list: KanbanListType, index: number) => {
               return <BentoList key={index} index={index} {...list} />;
             })}

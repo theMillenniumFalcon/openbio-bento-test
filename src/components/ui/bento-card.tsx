@@ -139,20 +139,25 @@ export const BentoCard = forwardRef<HTMLDivElement, BentoCardProps>(
             </div>
           }
         >
-          <div
-            ref={ref}
-            className={cn(
-              'kanban-card bg-white rounded-xl shadow-sm p-3 cursor-pointer hover:shadow-lg transition-all active:scale-90 select-none flex flex-col',
-              getCardDimensions(),
-              // isHorizontallyExpanded && 'absolute left-0',
-              className,
-            )}
-            id={`${taskTitle.replaceAll(' ', '-')}-${ticketID}`}
-            {...args}>
-            <Badge theme={BadgeThemeForTeam[teamName]} className="self-start">
-              {teamName}
-            </Badge>
-            <p className="kanban-card-title text-sm font-medium flex-1 flex items-center overflow-hidden">{taskTitle}</p>
+          <div className={cn(
+            "relative",
+            isHorizontallyExpanded ? "h-[180px] w-[180px]" : getCardDimensions()
+          )}>
+            <div
+              ref={ref}
+              className={cn(
+                'kanban-card bg-white rounded-xl shadow-sm p-3 cursor-pointer hover:shadow-lg transition-all active:scale-90 select-none flex flex-col',
+                getCardDimensions(),
+                isHorizontallyExpanded && 'absolute left-0',
+                className,
+              )}
+              id={`${taskTitle.replaceAll(' ', '-')}-${ticketID}`}
+              {...args}>
+              <Badge theme={BadgeThemeForTeam[teamName]} className="self-start">
+                {teamName}
+              </Badge>
+              <p className="kanban-card-title text-sm font-medium flex-1 flex items-center overflow-hidden">{taskTitle}</p>
+            </div>
           </div>
         </Tooltip>
       </motion.div>
