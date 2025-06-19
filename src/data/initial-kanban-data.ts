@@ -1,6 +1,6 @@
 export const INITIAL_KANBAN_DATA: KanbanListType[] = [
   {
-    listName: 'Not Started',
+    listName: '01',
     listItems: [
       {
         teamName: 'CHRONOS',
@@ -40,7 +40,7 @@ export const INITIAL_KANBAN_DATA: KanbanListType[] = [
     ],
   },
   {
-    listName: 'In Progress',
+    listName: '02',
     listItems: [
       {
         teamName: 'LABS',
@@ -107,7 +107,7 @@ export const INITIAL_KANBAN_DATA: KanbanListType[] = [
     ],
   },
   {
-    listName: 'Under Review',
+    listName: '03',
     listItems: [
       {
         teamName: 'CHRONOS',
@@ -143,7 +143,7 @@ export const INITIAL_KANBAN_DATA: KanbanListType[] = [
     ],
   },
   {
-    listName: 'Shipped',
+    listName: '04',
     listItems: [
       {
         teamName: 'LUMOS',
@@ -160,7 +160,7 @@ export const INITIAL_KANBAN_DATA: KanbanListType[] = [
       {
         teamName: 'LABS',
         taskTitle: 'Command center UI testing',
-        ticketID: 3,
+        ticketID: 12,
         tags: ['ui', 'frontend', 'testing'],
         assignees: [
           {
@@ -172,7 +172,7 @@ export const INITIAL_KANBAN_DATA: KanbanListType[] = [
       {
         teamName: 'CHRONOS',
         taskTitle: 'Notifictions Phase',
-        ticketID: 4,
+        ticketID: 13,
         assignees: [
           {
             username: 'themillenniumfalcon',

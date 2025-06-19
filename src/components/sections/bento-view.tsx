@@ -7,11 +7,11 @@ import {
 } from 'react-beautiful-dnd';
 import { ResponsiveControl } from '../layouts/responsive-control';
 import { KanbanBoardContext } from '@/contexts/kanban-board-context';
-import { KanbanList } from '../ui/kanban-list';
+import { BentoList } from '../ui/bento-list';
+import MessageView from './message-view';
 
-export default function KanbanView(): React.ReactElement {
-  const { filteredKanbanData, setFilteredKanbanData, setKanbanData } =
-    useContext(KanbanBoardContext);
+export default function BentoView(): React.ReactElement {
+  const { filteredKanbanData, setFilteredKanbanData, setKanbanData } = useContext(KanbanBoardContext);
   const [draggedItem, setDraggedItem] = useState<KanbanCardType | null>(null);
   const [draggedOverIndex, setDraggedOverIndex] = useState<number | null>(null);
 
@@ -50,28 +50,38 @@ export default function KanbanView(): React.ReactElement {
       (list) => list.listName === destination.droppableId,
     );
     const [draggedTask] = sourceList!.listItems.splice(source.index, 1);
-    destinationList!.listItems.splice(destination.index, 0, draggedTask);
+    
+    // Preserve the expanded state when moving the card
+    const cardWithExpandedState = {
+      ...draggedTask,
+      isExpanded: draggedTask.isExpanded || false
+    };
+    
+    destinationList!.listItems.splice(destination.index, 0, cardWithExpandedState);
 
     // Update the local storage with the latest Kanban data
     localStorage.setItem('kanban', JSON.stringify(updatedKanbanData));
 
-    // Update the state to trigger a re-render
+    // Update both filtered and global kanban data to trigger a re-render
     setFilteredKanbanData(updatedKanbanData);
+    setKanbanData(updatedKanbanData);
   };
 
   return (
-    <div className="kanban-view py-12 bg-cyan-500 flex flex-row items-center justify-center">
-      <div>Hello</div>
-      <DragDropContext
-        onDragStart={onDragStart}
-        onDragUpdate={onDragUpdate}
-        onDragEnd={onDragEnd}>
-        <ResponsiveControl className="flex flex-row items-start justify-start gap-3 max-xl:overflow-x-scroll">
-          {filteredKanbanData.map((list: KanbanListType, index: number) => {
-            return <KanbanList key={index} index={index} {...list} />;
-          })}
-        </ResponsiveControl>
-      </DragDropContext>
+    <div className="kanban-view py-12 flex flex-row items-start justify-start w-full">
+      <MessageView />
+      <div className="w-2/3">
+        <DragDropContext
+          onDragStart={onDragStart}
+          onDragUpdate={onDragUpdate}
+          onDragEnd={onDragEnd}>
+          <ResponsiveControl className="flex flex-row items-start justify-center gap-12 max-xl:overflow-x-scroll bg-blue-500 p-4">
+            {filteredKanbanData.map((list: KanbanListType, index: number) => {
+              return <BentoList key={index} index={index} {...list} />;
+            })}
+          </ResponsiveControl>
+        </DragDropContext>
+      </div>
     </div>
   );
 }

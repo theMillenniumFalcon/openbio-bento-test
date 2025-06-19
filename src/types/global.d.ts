@@ -11,6 +11,7 @@ declare type KanbanCardType = {
   ticketID: number;
   assignees: AssigneeType[];
   tags?: string[];
+  isExpanded?: boolean;
 };
 
 declare type KanbanListType = {

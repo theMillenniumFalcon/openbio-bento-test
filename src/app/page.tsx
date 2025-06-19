@@ -1,11 +1,11 @@
 'use client';
 import { PageContainer } from '@/components/layouts/page-container';
-import KanbanView from '@/components/sections/kanban-view';
+import BentoView from '@/components/sections/bento-view';
 
 export default function Home() {
   return (
     <PageContainer>
-      <KanbanView />
+      <BentoView />
     </PageContainer>
   );
 }

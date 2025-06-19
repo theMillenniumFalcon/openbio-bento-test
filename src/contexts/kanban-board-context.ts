@@ -8,6 +8,9 @@ export type KanbanBoardContextType = {
   setFilteredKanbanData: (data: KanbanListType[]) => void;
   searchQuery: string;
   setSearchQuery: (search: string) => void;
+  expandedCards: Set<number>;
+  setExpandedCards: (expandedCards: Set<number>) => void;
+  toggleCardExpansion: (ticketID: number, isExpanded: boolean) => void;
 };
 
 export const INITIAL_KANBAN_CONTEXT_DATA: KanbanBoardContextType = {
@@ -17,6 +20,9 @@ export const INITIAL_KANBAN_CONTEXT_DATA: KanbanBoardContextType = {
   setFilteredKanbanData: () => {},
   searchQuery: '',
   setSearchQuery: () => {},
+  expandedCards: new Set(),
+  setExpandedCards: () => {},
+  toggleCardExpansion: () => {},
 } satisfies KanbanBoardContextType;
 
 export const KanbanBoardContext: React.Context<KanbanBoardContextType> =
