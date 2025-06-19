@@ -31,14 +31,14 @@ export const BentoList = forwardRef<HTMLDivElement, BentoListProps>(
               ref={provided.innerRef}
               {...provided.droppableProps}
               className={cn(
-                'kanban-list border-b-4 border-transparent bg-red-800 w-fit min-h-[200px]',
+                'kanban-list border-b-4 border-transparent w-full min-h-[200px]',
                 // Adjust max width to accommodate horizontally expanded cards
-                horizontallyExpandedCards.size > 0 ? 'max-w-[500px]' : 'max-w-[250px]',
+                horizontallyExpandedCards.size > 0 ? 'max-w-[400px] sm:max-w-[500px]' : 'max-w-[200px] sm:max-w-[250px]',
                 className,
               )}
               {...args}>
               <div className={cn(
-                'grid gap-12',
+                'grid gap-4 sm:gap-8 lg:gap-12',
                 'grid-cols-1 auto-rows-[180px]'
               )}>
                 {listItems.map((card: KanbanCardType, index: number) => {

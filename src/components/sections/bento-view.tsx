@@ -69,14 +69,14 @@ export default function BentoView(): React.ReactElement {
   };
 
   return (
-    <div className="kanban-view py-12 flex flex-row items-start justify-start w-full">
+    <div className="flex flex-row items-start justify-start w-full">
       <MessageView />
-      <div className="w-2/3">
+      <div className="flex-1 min-w-0">
         <DragDropContext
           onDragStart={onDragStart}
           onDragUpdate={onDragUpdate}
           onDragEnd={onDragEnd}>
-          <ResponsiveControl className="flex flex-row items-start justify-center gap-12 max-xl:overflow-x-scroll bg-blue-500 p-4">
+          <ResponsiveControl className="flex flex-row items-start justify-center gap-4 lg:gap-8 xl:gap-12 p-4 w-full">
             {filteredKanbanData.map((list: KanbanListType, index: number) => {
               return <BentoList key={index} index={index} {...list} />;
             })}

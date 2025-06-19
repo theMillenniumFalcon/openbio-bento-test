@@ -32,6 +32,22 @@ export const BentoCard = forwardRef<HTMLDivElement, BentoCardProps>(
     },
     ref,
   ) => {
+    // Function to get light background color based on team
+    const getTeamBackgroundColor = (team: TeamNameType): string => {
+      switch (team) {
+        case 'CHRONOS':
+          return 'bg-green-50';
+        case 'LABS':
+          return 'bg-orange-50';
+        case 'PHOENIX':
+          return 'bg-purple-50';
+        case 'LUMOS':
+          return 'bg-yellow-50';
+        default:
+          return 'bg-gray-50';
+      }
+    };
+
     const handleHorizontalRectangleClick = (e: React.MouseEvent) => {
       e.stopPropagation();
       // If already horizontally expanded, collapse it
@@ -146,8 +162,9 @@ export const BentoCard = forwardRef<HTMLDivElement, BentoCardProps>(
             <div
               ref={ref}
               className={cn(
-                'kanban-card bg-white rounded-xl shadow-sm p-3 cursor-pointer hover:shadow-lg transition-all active:scale-90 select-none flex flex-col',
+                'kanban-card rounded-xl shadow-sm p-3 cursor-pointer hover:shadow-lg transition-all active:scale-90 select-none flex flex-col',
                 getCardDimensions(),
+                getTeamBackgroundColor(teamName),
                 isHorizontallyExpanded && 'absolute left-0',
                 className,
               )}
